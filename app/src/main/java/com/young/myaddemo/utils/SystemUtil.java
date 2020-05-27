@@ -15,6 +15,7 @@ import android.telephony.TelephonyManager;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 import android.webkit.WebSettings;
+import android.widget.Button;
 
 import com.rbt.vrde.core.CoreManager;
 import com.rbt.vrde.utils.MacUtil;
@@ -34,6 +35,10 @@ public class SystemUtil {
     public static String getOSVCode() {
         //return Build.VERSION.SDK_INT;
         return Build.VERSION.RELEASE;
+    }
+
+    public static int getSDKInt() {
+        return Build.VERSION.SDK_INT;
     }
 
     public static String getDevVendor() {
@@ -228,7 +233,7 @@ public class SystemUtil {
         WindowManager manager = (WindowManager) CoreManager.getContext().getSystemService(com.rbt.vrde.utils.R.utils.SystemUtil._window);
         DisplayMetrics dm = new DisplayMetrics();
         manager.getDefaultDisplay().getMetrics(dm);
-        return (int) (dm.density*160);
+        return (int) (dm.density * 160);
     }
 
     public static String getDeviceBrand() {

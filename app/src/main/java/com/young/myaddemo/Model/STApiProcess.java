@@ -148,10 +148,17 @@ public class STApiProcess extends Thread implements BrushRequestManager.RequestC
                     mApiModel.clickUrls[i] = replaceUrl(mApiModel.clickUrls[i], dx, dy);
                 }
             }
-
+            BrushRequestManager.postExposure(mApiModel.clickUrls[0], null, new ExposureCallback());
+            return true;
+        } else {
+            String url = replaceUrl(mApiModel.clickUrls[0], dx, dy);
+            return startWebWindow(url, null, mHandler);
         }
-        BrushRequestManager.postExposure(mApiModel.clickUrls[0], null, );
 
+    }
+
+    private boolean startWebWindow(final String url, final String userAgent, Handler handler) {
+        return false;
     }
 
     private String replaceUrl(String oriUrl, int dx, int dy) {
