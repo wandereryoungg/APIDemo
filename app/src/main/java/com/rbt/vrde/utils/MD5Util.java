@@ -1,4 +1,4 @@
-package com.young.myaddemo.utils;
+package com.rbt.vrde.utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -8,14 +8,14 @@ import java.security.NoSuchAlgorithmException;
 
 /**
  * MD5工具
- *
+ * 
  * @author Yipd
  * @date 2016-10-18 下午2:41:26
  */
 public class MD5Util {
-
+    
     public static final int BUFFER_SIZE = 4096;
-
+    
     private static final String MD5_ALGORITHM_NAME = com.rbt.vrde.utils.R.utils.MD5Util._MD5;
 
     private static final char[] HEX_CHARS =
@@ -58,7 +58,7 @@ public class MD5Util {
         s = new String(str); // 换后的结果转换为字符串
         return s;
     }
-
+    
     public static String stringMD5(String input) {
         try {
             // 拿到一个MD5转换器(如果想要SHA1参数换成”SHA1”)
@@ -88,7 +88,7 @@ public class MD5Util {
             resultCharArray[index++] = HEX_CHARS[b & 0xf];
 
         }*/
-
+        
         char chars[] = new char[32];
         for (int i = 0; i < chars.length; i = i + 2) {
             byte b = bytes[i / 2];
@@ -138,20 +138,20 @@ public class MD5Util {
         }
 
     }
-
+    
    /* public static void main(String[] args) {
-
-        long startTime = System.currentTimeMillis();
-
-        try {
-          System.out.println(fileMD5("E:/Program Files/eclipse/workspace1/carassistant/carassistant.zip"));
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
-
-        long endTime = System.currentTimeMillis();
-
-        System.out.println((endTime - startTime)/1000);
-
+        
+        long startTime = System.currentTimeMillis();  
+        
+        try {  
+          System.out.println(fileMD5("E:/Program Files/eclipse/workspace1/carassistant/carassistant.zip"));  
+        } catch (IOException e) {  
+          e.printStackTrace();  
+        }  
+        
+        long endTime = System.currentTimeMillis();  
+        
+        System.out.println((endTime - startTime)/1000);  
+        
       }  */
 }

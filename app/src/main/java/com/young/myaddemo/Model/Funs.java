@@ -22,6 +22,7 @@ public class Funs {
 
     public static List<AdModel> parseSTList(InnerAdModel innerAdModel, JSONObject obj) {
 
+
         if (obj == null) {
             throw new IllegalArgumentException("parse error with no input");
         }
@@ -41,7 +42,7 @@ public class Funs {
         model.adWidth = jsonObject.optInt("ad_width");
         model.adHeight = jsonObject.optInt("ad_height");
         model.landingPage = jsonObject.optString("landing_page");
-        model.interaction = jsonObject.optInt("interaction");
+        model.interactionType = jsonObject.optInt("interaction");
         model.macro = jsonObject.optInt("macro");
         model.imageUrls = jsonArray2Array(jsonObject.optJSONArray("image"));
         model.iconUrls = jsonArray2Array(jsonObject.optJSONArray("icon"));
@@ -52,7 +53,8 @@ public class Funs {
         model.activeUrls = jsonArray2Array(jsonObject.optJSONArray("active_urls"));
         model.showUrls = jsonArray2Array(jsonObject.optJSONArray("show_urls"));
         model.clickUrls = jsonArray2Array(jsonObject.optJSONArray("click_urls"));
-        model.macrosArrs = jsonArray2Array(jsonObject.optJSONArray("macros_arrs"));
+
+        //model.macrosArrs = jsonArray2Array(jsonObject.optJSONArray("macros_arrs"));
         data.add(model);
         return data;
     }

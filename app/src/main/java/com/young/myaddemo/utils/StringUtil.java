@@ -18,4 +18,8 @@ public class StringUtil {
         return !isBlank(str);
     }
 
+    public static boolean isEmpty(String str) {
+        return str != null && str.length() > 0;
+    }
+
 }

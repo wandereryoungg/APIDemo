@@ -2,9 +2,13 @@ package com.young.myaddemo.utils;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
@@ -13,16 +17,23 @@ import android.view.WindowManager;
 import android.webkit.WebSettings;
 
 import com.rbt.vrde.core.CoreManager;
+import com.rbt.vrde.utils.MacUtil;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Random;
 
 public class SystemUtil {
 
-    public static int getOSVCode() {
-        return Build.VERSION.SDK_INT;
+    public static String getOSVCode() {
+        //return Build.VERSION.SDK_INT;
+        return Build.VERSION.RELEASE;
     }
 
     public static String getDevVendor() {
@@ -34,7 +45,16 @@ public class SystemUtil {
     }
 
     public static int getAppVer() {
-        return new Random().nextInt(15);
+        int versionCode;
+        PackageManager manager = CoreManager.getContext().getPackageManager();
+        try {
+            PackageInfo info = manager.getPackageInfo(CoreManager.getContext().getPackageName(), 0);
+            versionCode = info.versionCode;
+            return versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return 1;
+        }
     }
 
     public static String getPackageName() {
@@ -43,6 +63,47 @@ public class SystemUtil {
 
     public static String getWifiMac() {
         return MacUtil.getInstance(CoreManager.getContext()).getWifiMac();
+    }
+
+    public static String getIpAddress() {
+        String ip = null;
+        ConnectivityManager manager = (ConnectivityManager) CoreManager.getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        @SuppressLint("MissingPermission") NetworkInfo mobileInfo = manager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        NetworkInfo wifiInfo = manager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (mobileInfo.isConnected()) {
+            ip = getLocalIpAddress();
+        } else if (wifiInfo.isConnected()) {
+            @SuppressLint("WifiManagerLeak") WifiManager wifiManager = (WifiManager) CoreManager.getContext().getSystemService(Context.WIFI_SERVICE);
+            WifiInfo info = wifiManager.getConnectionInfo();
+            int str = info.getIpAddress();
+            StringBuilder sb = new StringBuilder();
+            sb.append(str & 0xFF).append(".");
+            sb.append((str >> 8) & 0xFF).append(".");
+            sb.append((str >> 16) & 0xFF).append(".");
+            sb.append((str >> 24) & 0xFF);
+            ip = sb.toString();
+        }
+        return ip;
+
+    }
+
+    public static String getLocalIpAddress() {
+        String ipV4 = null;
+        try {
+            ArrayList<NetworkInterface> list = Collections.list(NetworkInterface.getNetworkInterfaces());
+            for (NetworkInterface networkInterface : list) {
+                ArrayList<InetAddress> addresses = Collections.list(networkInterface.getInetAddresses());
+                for (InetAddress inetAddress : addresses) {
+                    if (!inetAddress.isLoopbackAddress()) {
+                        ipV4 = inetAddress.getHostAddress();
+                    }
+                }
+            }
+            return ipV4;
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     public static HashMap<String, Integer> getScreenSize() {
@@ -85,8 +146,8 @@ public class SystemUtil {
         return imsi;
     }
 
-    public static String getNetworkType() {
-        String netType = com.rbt.vrde.utils.R.utils.SystemUtil._CELL_UNKNOWN;
+    public static int getNetworkType() {
+        int netType = 6;
         if (!checkPermission(com.rbt.vrde.utils.R.utils.SystemUtil._android_permission_ACCESS_NETWORK_STATE)) {
             return netType;
         }
@@ -95,7 +156,7 @@ public class SystemUtil {
         if (networkInfo != null && networkInfo.isConnected()) {
             {
                 if (networkInfo.getType() == ConnectivityManager.TYPE_WIFI) {
-                    netType = com.rbt.vrde.utils.R.utils.SystemUtil._WIFI;
+                    netType = 1;
                 } else if (networkInfo.getType() == ConnectivityManager.TYPE_MOBILE) {
                     String typeName = networkInfo.getSubtypeName();
 
@@ -107,7 +168,7 @@ public class SystemUtil {
                         case TelephonyManager.NETWORK_TYPE_CDMA:
                         case TelephonyManager.NETWORK_TYPE_1xRTT:
                         case TelephonyManager.NETWORK_TYPE_IDEN: //api<8 : replace by 11
-                            netType = com.rbt.vrde.utils.R.utils.SystemUtil._CELL_2G;
+                            netType = 2;
                             break;
                         case TelephonyManager.NETWORK_TYPE_UMTS:
                         case TelephonyManager.NETWORK_TYPE_EVDO_0:
@@ -118,17 +179,17 @@ public class SystemUtil {
                         case TelephonyManager.NETWORK_TYPE_EVDO_B: //api<9 : replace by 14
                         case TelephonyManager.NETWORK_TYPE_EHRPD:  //api<11 : replace by 12
                         case TelephonyManager.NETWORK_TYPE_HSPAP:  //api<13 : replace by 15
-                            netType = com.rbt.vrde.utils.R.utils.SystemUtil._CELL_3G;
+                            netType = 3;
                             break;
                         case TelephonyManager.NETWORK_TYPE_LTE:    //api<11 : replace by 13
-                            netType = com.rbt.vrde.utils.R.utils.SystemUtil._CELL_4G;
+                            netType = 4;
                             break;
                         default:
                             // TD-SCDMA 中国移动 联通 电信 三种3G制式
                             if (typeName.equalsIgnoreCase(com.rbt.vrde.utils.R.utils.SystemUtil._TD_SCDMA) || typeName.equalsIgnoreCase(com.rbt.vrde.utils.R.utils.SystemUtil._WCDMA) || typeName.equalsIgnoreCase(com.rbt.vrde.utils.R.utils.SystemUtil._CDMA2000)) {
-                                netType = com.rbt.vrde.utils.R.utils.SystemUtil._CELL_3G;
+                                netType = 3;
                             } else {
-                                netType = com.rbt.vrde.utils.R.utils.SystemUtil._CELL_UNKNOWN;
+                                netType = 6;
                             }
                             break;
                     }
@@ -144,7 +205,7 @@ public class SystemUtil {
     }
 
     public static String getUserAgent() {
-        if (CoreManager.getContext() != null && getOSVCode() >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
+        if (CoreManager.getContext() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
             return WebSettings.getDefaultUserAgent(CoreManager.getContext());
         }
         return "";
@@ -167,7 +228,7 @@ public class SystemUtil {
         WindowManager manager = (WindowManager) CoreManager.getContext().getSystemService(com.rbt.vrde.utils.R.utils.SystemUtil._window);
         DisplayMetrics dm = new DisplayMetrics();
         manager.getDefaultDisplay().getMetrics(dm);
-        return (int) dm.density;
+        return (int) (dm.density*160);
     }
 
     public static String getDeviceBrand() {

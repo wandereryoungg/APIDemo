@@ -1,11 +1,13 @@
-package com.young.myaddemo.utils;
+package com.rbt.vrde.utils;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
 
-import com.rbt.vrde.utils.Constant;
+import com.young.myaddemo.utils.CryptPrefs;
+import com.young.myaddemo.utils.StringUtil;
+import com.young.myaddemo.utils.SystemUtil;
 
 import java.net.NetworkInterface;
 import java.net.SocketException;
